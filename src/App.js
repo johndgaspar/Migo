@@ -4,11 +4,12 @@ import Chat from './components/Chat';
 import JournalEntry from './components/JournalEntry';
 import MigoSelector from './components/MigoSelector';
 import ChatList from './components/ChatList';
-import './App.css'; // ✅ Make sure this line is here
+import BottomNav from './components/BottomNav';
+import './App.css';
 
 function App() {
   const chatRef = useRef();
-  const [mode, setMode] = useState('reflect'); // "reflect" or "chat"
+  const [mode, setMode] = useState('chat'); // chat | reflect | migos | settings
   const [darkMode, setDarkMode] = useState(false);
   const [selectedMigo, setSelectedMigo] = useState("migo");
 
@@ -21,19 +22,17 @@ function App() {
   }, [darkMode]);
 
   return (
-    <div style={{ fontFamily: 'Segoe UI, sans-serif', height: '100vh', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ fontFamily: 'Segoe UI, sans-serif', height: '100vh', display: 'flex', flexDirection: 'column', paddingBottom: '3.5rem' }}>
       {/* Header */}
       <div style={{ padding: '1rem', borderBottom: '1px solid #ccc', backgroundColor: '#f5f5f5' }}>
         <h1 style={{
-  fontSize: '1.75rem',
-  marginBottom: '0.5rem',
-  letterSpacing: '2px',
-  textTransform: 'uppercase',
-  fontWeight: 'bold'
-}}>
-  MIGO
-</h1>
-
+          fontSize: '1.75rem',
+          marginBottom: '0.5rem',
+          letterSpacing: '2px',
+          fontWeight: 'bold'
+        }}>
+          🧠 MIGO
+        </h1>
 
         <label style={{ display: 'block', marginBottom: '0.5rem' }}>
           <input
@@ -44,18 +43,9 @@ function App() {
           />
           Dark Mode
         </label>
-
-        <MigoSelector selected={selectedMigo} onChange={setSelectedMigo} />
-
-        <div style={{ marginTop: '0.5rem' }}>
-          <button onClick={() => setMode('reflect')} style={{ marginRight: '0.5rem' }}>
-            Reflect Mode
-          </button>
-          <button onClick={() => setMode('chat')}>Chat Mode</button>
-        </div>
       </div>
 
-      {/* Main Layout */}
+      {/* Main Content Area */}
       <div className="chat-layout">
         {mode === 'chat' && (
           <>
@@ -73,7 +63,22 @@ function App() {
             <JournalEntry onSubmit={(data) => chatRef.current?.receiveJournalPrompt(data)} />
           </div>
         )}
+
+        {mode === 'migos' && (
+          <div style={{ flexGrow: 1, padding: '1rem' }}>
+            <MigoSelector selected={selectedMigo} onChange={setSelectedMigo} />
+          </div>
+        )}
+
+        {mode === 'settings' && (
+          <div style={{ flexGrow: 1, padding: '1rem', textAlign: 'center' }}>
+            <h2>Settings (coming soon)</h2>
+          </div>
+        )}
       </div>
+
+      {/* Bottom Navigation */}
+      <BottomNav mode={mode} setMode={setMode} />
     </div>
   );
 }
