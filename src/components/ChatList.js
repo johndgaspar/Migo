@@ -2,21 +2,21 @@ import React from 'react';
 
 const personas = [
   { id: 'migo', name: 'Migo', avatar: '🧠' },
+  { id: 'coach', name: 'Coach', avatar: '💪' },
+  { id: 'sol', name: 'Sol', avatar: '🕊️' },
+  { id: 'may', name: 'May', avatar: '🍃' },
+  { id: 'sig', name: 'Sig', avatar: '🛋️' },
+  { id: 'rex', name: 'Rex', avatar: '⚖️' },
+  { id: 'blaze', name: 'Blaze', avatar: '🔥' },
+  { id: 'sage', name: 'Sage', avatar: '🌿' },
   { id: 'mrC', name: 'Mr. C', avatar: '✝️' },
-  { id: 'bubbles', name: 'Bubbles', avatar: '🫧' },
-  // Add more Migos here
+  { id: 'drMigo', name: 'Dr. Migo', avatar: '🧑‍⚕️' },
 ];
 
 const ChatList = ({ selected, onSelectPersona }) => {
   return (
-    <div style={{
-      width: '200px',
-      borderRight: '1px solid #ccc',
-      padding: '1rem',
-      backgroundColor: '#f9f9f9',
-      overflowY: 'auto'
-    }}>
-      <h3 style={{ marginBottom: '1rem' }}>Migos</h3>
+    <div style={{ padding: '1rem' }}>
+      <h3 style={{ marginBottom: '1rem', fontWeight: 'bold' }}>Migos</h3>
       {personas.map(p => (
         <div
           key={p.id}
@@ -25,10 +25,12 @@ const ChatList = ({ selected, onSelectPersona }) => {
             display: 'flex',
             alignItems: 'center',
             padding: '0.5rem',
-            marginBottom: '0.5rem',
-            borderRadius: '8px',
+            borderRadius: '10px',
             cursor: 'pointer',
-            backgroundColor: selected === p.id ? '#d0ebff' : 'transparent'
+            marginBottom: '0.5rem',
+            backgroundColor: selected === p.id ? '#d0ebff' : 'transparent',
+            fontWeight: selected === p.id ? 'bold' : 'normal',
+            transition: 'background 0.2s',
           }}
         >
           <span style={{ fontSize: '1.5rem', marginRight: '0.5rem' }}>{p.avatar}</span>
