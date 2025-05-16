@@ -2,28 +2,29 @@ import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } f
 import { getChatResponse } from '../utils/openai';
 
 const Chat = forwardRef((props, ref) => {
-  const [messages, setMessages] = useState([]);
+  const [messagesByMigo, setMessagesByMigo] = useState({});
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // Load saved chat history
+  const currentPersona = props.selectedPersona || 'migo';
+
+  // Load saved chat history from localStorage on first load
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("chatMessages") || "[]");
-    setMessages(saved);
+    const saved = JSON.parse(localStorage.getItem('chatMessagesByMigo') || '{}');
+    setMessagesByMigo(saved);
   }, []);
 
-  // Save messages to localStorage
+  // Save to localStorage whenever messages change
   useEffect(() => {
-    localStorage.setItem("chatMessages", JSON.stringify(messages));
-  }, [messages]);
+    localStorage.setItem('chatMessagesByMigo', JSON.stringify(messagesByMigo));
+  }, [messagesByMigo]);
 
-  // Scroll to bottom when new messages are added
+  // Scroll to bottom on new message
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messagesByMigo[currentPersona]]);
 
-  // Expose journal input to Chat via ref
   useImperativeHandle(ref, () => ({
     receiveJournalPrompt({ mood, message }) {
       handleUserMessage(message, mood);
@@ -33,13 +34,22 @@ const Chat = forwardRef((props, ref) => {
   const handleUserMessage = async (text, mood = null) => {
     if (!text.trim()) return;
 
-    const newMessages = [...messages, { from: 'user', text }];
-    setMessages(newMessages);
+    const newMessages = [...(messagesByMigo[currentPersona] || []), { from: 'user', text }];
+    setMessagesByMigo(prev => ({
+      ...prev,
+      [currentPersona]: newMessages
+    }));
+
     setInput('');
     setIsTyping(true);
 
-    const reply = await getChatResponse(text, mood, props.selectedPersona || "migo");
-    setMessages([...newMessages, { from: 'bot', text: reply }]);
+    const reply = await getChatResponse(text, mood, currentPersona);
+
+    setMessagesByMigo(prev => ({
+      ...prev,
+      [currentPersona]: [...newMessages, { from: 'bot', text: reply }]
+    }));
+
     setIsTyping(false);
   };
 
@@ -49,9 +59,17 @@ const Chat = forwardRef((props, ref) => {
   };
 
   const clearChat = () => {
-    setMessages([]);
-    localStorage.removeItem('chatMessages');
+    setMessagesByMigo(prev => ({
+      ...prev,
+      [currentPersona]: []
+    }));
+    localStorage.setItem('chatMessagesByMigo', JSON.stringify({
+      ...messagesByMigo,
+      [currentPersona]: []
+    }));
   };
+
+  const messages = messagesByMigo[currentPersona] || [];
 
   return (
     <div style={{
