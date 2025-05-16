@@ -24,7 +24,16 @@ function App() {
     <div style={{ fontFamily: 'Segoe UI, sans-serif', height: '100vh', display: 'flex', flexDirection: 'column' }}>
       {/* Header */}
       <div style={{ padding: '1rem', borderBottom: '1px solid #ccc', backgroundColor: '#f5f5f5' }}>
-        <h1 style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>Migo Journal</h1>
+        <h1 style={{
+  fontSize: '1.75rem',
+  marginBottom: '0.5rem',
+  letterSpacing: '2px',
+  textTransform: 'uppercase',
+  fontWeight: 'bold'
+}}>
+  MIGO
+</h1>
+
 
         <label style={{ display: 'block', marginBottom: '0.5rem' }}>
           <input
