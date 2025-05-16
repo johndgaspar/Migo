@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useRef, useImperativeHandle, forwardRef } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useImperativeHandle,
+  forwardRef
+} from 'react';
 import { getChatResponse } from '../utils/openai';
 
 const Chat = forwardRef((props, ref) => {
@@ -8,22 +14,23 @@ const Chat = forwardRef((props, ref) => {
   const messagesEndRef = useRef(null);
 
   const currentPersona = props.selectedPersona || 'migo';
+  const messages = messagesByMigo[currentPersona] || [];
 
-  // Load saved chat history from localStorage on first load
+  // Load chat history on mount
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('chatMessagesByMigo') || '{}');
     setMessagesByMigo(saved);
   }, []);
 
-  // Save to localStorage whenever messages change
+  // Save chat history to localStorage
   useEffect(() => {
     localStorage.setItem('chatMessagesByMigo', JSON.stringify(messagesByMigo));
   }, [messagesByMigo]);
 
-  // Scroll to bottom on new message
+  // Scroll to bottom when messages update
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messagesByMigo[currentPersona]]);
+  }, [messages]);
 
   useImperativeHandle(ref, () => ({
     receiveJournalPrompt({ mood, message }) {
@@ -34,7 +41,7 @@ const Chat = forwardRef((props, ref) => {
   const handleUserMessage = async (text, mood = null) => {
     if (!text.trim()) return;
 
-    const newMessages = [...(messagesByMigo[currentPersona] || []), { from: 'user', text }];
+    const newMessages = [...messages, { from: 'user', text }];
     setMessagesByMigo(prev => ({
       ...prev,
       [currentPersona]: newMessages
@@ -69,48 +76,95 @@ const Chat = forwardRef((props, ref) => {
     }));
   };
 
-  const messages = messagesByMigo[currentPersona] || [];
-
   return (
     <div style={{
+      flexGrow: 1,
       display: 'flex',
       flexDirection: 'column',
-      height: 'calc(100vh - 2rem)',
-      maxWidth: '600px',
-      margin: '0 auto',
-      padding: '1rem'
+      height: '100%',
+      borderLeft: '1px solid #ccc',
+      backgroundColor: '#fff'
     }}>
+      {/* Chat Messages */}
       <div style={{
         flexGrow: 1,
-        padding: '1rem',
-        border: '1px solid #ccc',
-        borderRadius: '8px',
         overflowY: 'auto',
-        marginBottom: '1rem'
+        padding: '1rem',
+        display: 'flex',
+        flexDirection: 'column',
       }}>
         {messages.map((msg, i) => (
-          <div key={i} style={{ textAlign: msg.from === 'user' ? 'right' : 'left', margin: '0.5rem 0' }}>
-            <span className={`chat-bubble ${msg.from === 'user' ? 'user' : 'bot'}`}>
+          <div
+            key={i}
+            style={{
+              display: 'flex',
+              justifyContent: msg.from === 'user' ? 'flex-end' : 'flex-start',
+              marginBottom: '0.5rem',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: msg.from === 'user' ? '#0084ff' : '#e4e6eb',
+                color: msg.from === 'user' ? 'white' : 'black',
+                padding: '0.75rem 1rem',
+                borderRadius: '20px',
+                maxWidth: '70%',
+                fontSize: '0.95rem',
+                whiteSpace: 'pre-wrap',
+                lineHeight: '1.4',
+              }}
+            >
               {msg.text}
-            </span>
+            </div>
           </div>
         ))}
-        {isTyping && <div><em>Migo is typing...</em></div>}
+        {isTyping && (
+          <div style={{ fontStyle: 'italic', color: '#666' }}>Migo is typing...</div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexShrink: 0 }}>
+      {/* Input Bar */}
+      <form onSubmit={handleSubmit} style={{
+        display: 'flex',
+        borderTop: '1px solid #ccc',
+        padding: '1rem',
+      }}>
         <input
           type="text"
           className="chat-input"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type your message..."
+          style={{
+            flexGrow: 1,
+            padding: '0.75rem 1rem',
+            borderRadius: '20px',
+            border: '1px solid #ccc',
+            marginRight: '0.5rem',
+          }}
         />
-        <button type="submit" className="send-button">Send</button>
+        <button type="submit" className="send-button" style={{
+          padding: '0.75rem 1rem',
+          borderRadius: '20px',
+          border: 'none',
+          backgroundColor: '#0084ff',
+          color: 'white',
+          cursor: 'pointer',
+        }}>
+          Send
+        </button>
       </form>
 
-      <button onClick={clearChat} className="clear-button" style={{ flexShrink: 0, marginTop: '1rem' }}>
+      {/* Clear Chat Button */}
+      <button onClick={clearChat} className="clear-button" style={{
+        margin: '0.5rem auto 1rem auto',
+        background: 'none',
+        border: 'none',
+        color: '#888',
+        cursor: 'pointer',
+        fontSize: '0.85rem'
+      }}>
         Clear Chat
       </button>
     </div>
