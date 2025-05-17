@@ -1,5 +1,6 @@
 // src/components/JournalEntry.js
 import React, { useState, useEffect } from 'react';
+import MoodChart from './MoodChart';
 
 // 🧠 Mood options with emojis
 const moodOptions = {
@@ -38,7 +39,7 @@ function JournalEntry() {
       mood,
       emoji: moodOptions[mood],
       text: entry,
-      timestamp: new Date().toLocaleString()
+      timestamp: new Date().toISOString()
     };
 
     const updated = [...entries, newEntry];
@@ -102,9 +103,14 @@ function JournalEntry() {
         >
           <div style={{ fontSize: '1.2rem' }}>{e.emoji} <strong>{e.mood}</strong></div>
           <div style={{ marginTop: 4 }}>{e.text}</div>
-          <div style={{ fontSize: '0.8rem', color: '#666', marginTop: 4 }}>{e.timestamp}</div>
+          <div style={{ fontSize: '0.8rem', color: '#666', marginTop: 4 }}>{new Date(e.timestamp).toLocaleString()}</div>
         </div>
       ))}
+
+      {/* Weekly Mood Graph */}
+      <div style={{ marginTop: 40 }}>
+        <MoodChart />
+      </div>
     </div>
   );
 }

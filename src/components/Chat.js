@@ -54,6 +54,11 @@ const Chat = forwardRef((props, ref) => {
   const [messagesByMigo, setMessagesByMigo] = useState({});
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [moodLog, setMoodLog] = useState(() => {
+    const saved = localStorage.getItem('moodLog');
+    return saved ? JSON.parse(saved) : [];
+  });
+
   const messagesEndRef = useRef(null);
 
   const currentPersona = props.selectedPersona || 'migo';
@@ -80,6 +85,18 @@ const Chat = forwardRef((props, ref) => {
 
   const handleUserMessage = async (text, mood = null) => {
     if (!text.trim()) return;
+
+    const journalEntry = {
+      mood: mood || null,
+      text: text.trim(),
+      timestamp: Date.now()
+    };
+
+    setMoodLog(prev => {
+      const updated = [...prev, journalEntry];
+      localStorage.setItem('moodLog', JSON.stringify(updated));
+      return updated;
+    });
 
     const newMessages = [...messages, { from: 'user', text }];
     setMessagesByMigo(prev => ({
