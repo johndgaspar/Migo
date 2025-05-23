@@ -44,7 +44,7 @@ User: ${input}
 
     const reply = completion.choices[0]?.message?.content?.trim() || '...';
 
-    res.status(200).json({ reply }); // 👈 frontend expects `reply`
+    res.status(200).json({ reply });
   } catch (error) {
     console.error('API Error:', error);
     res.status(500).json({ error: 'Internal server error' });
