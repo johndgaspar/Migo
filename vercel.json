@@ -1,0 +1,17 @@
+{
+  "builds": [
+    {
+      "src": "text-buddy/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "build" }
+    },
+    {
+      "src": "migo-backend/api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "migo-backend/api/$1.js" },
+    { "src": "/(.*)", "dest": "text-buddy/$1" }
+  ]
+}
