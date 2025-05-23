@@ -23,4 +23,4 @@ const personas = {
   }
 };
 
-module.exports = personas;
+export default personas;
