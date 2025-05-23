@@ -6,12 +6,12 @@
       "config": { "distDir": "build" }
     },
     {
-      "src": "migo-backend/api/echo.js",
+      "src": "migo-backend/api/chat.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
-    { "src": "/api/chat", "dest": "migo-backend/api/echo.js" },
+    { "src": "/api/chat", "dest": "migo-backend/api/chat.js" },
     { "src": "/(.*)", "dest": "text-buddy/$1" }
   ]
 }
